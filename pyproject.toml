@@ -1,13 +1,13 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "gex-explained"
 version = "0.1.0"
 description = "Educational implementation of Gamma Exposure (GEX) from scratch"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 dependencies = [
     "numpy>=1.26",
@@ -28,6 +28,5 @@ markers = [
     "integration: marks tests as requiring a live API key (deselect with -m 'not integration')",
 ]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["code*"]
+[tool.hatch.build.targets.wheel]
+packages = ["code"]
