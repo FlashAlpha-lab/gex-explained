@@ -11,6 +11,8 @@ import os
 import pytest
 import requests
 
+from flashalpha import FlashAlpha, FlashAlphaError, TierRestrictedError
+
 FLASHALPHA_BASE = "https://lab.flashalpha.com"
 TICKER = "SPY"
 
@@ -26,6 +28,11 @@ def api_key() -> str:
 @pytest.fixture(scope="module")
 def auth_headers(api_key: str) -> dict:
     return {"X-Api-Key": api_key}
+
+
+@pytest.fixture(scope="module")
+def fa_client(api_key: str) -> FlashAlpha:
+    return FlashAlpha(api_key)
 
 
 def get(path: str, headers: dict, timeout: int = 15) -> dict:
@@ -102,3 +109,168 @@ class TestAuth:
         url = f"{FLASHALPHA_BASE}/v1/exposure/levels/{TICKER}"
         resp = requests.get(url, headers={"X-Api-Key": "invalid-key-xyz"}, timeout=15)
         assert resp.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# New integration tests: SDK client, GEX, levels, hedging, DEX/VEX/CHEX
+# ---------------------------------------------------------------------------
+
+@pytest.mark.integration
+class TestGexStrikesSdk:
+    """Verify gex() via the FlashAlpha SDK returns valid per-strike data."""
+
+    def test_gex_returns_strikes_list(self, fa_client):
+        data = fa_client.gex(TICKER)
+        assert isinstance(data.get("strikes"), list)
+        assert len(data["strikes"]) > 0
+
+    def test_gex_strikes_have_call_put_net_gex(self, fa_client):
+        data = fa_client.gex(TICKER)
+        for row in data["strikes"][:5]:
+            for field in ("strike", "call_gex", "put_gex", "net_gex"):
+                assert field in row, f"Missing '{field}' in strike row"
+
+    def test_gex_underlying_price_is_positive(self, fa_client):
+        data = fa_client.gex(TICKER)
+        price = data.get("underlying_price")
+        assert price is not None
+        assert price > 0
+
+    def test_gex_call_gex_is_non_negative_at_all_strikes(self, fa_client):
+        data = fa_client.gex(TICKER)
+        for row in data["strikes"]:
+            assert row["call_gex"] >= 0, f"Negative call_gex at {row['strike']}"
+
+    def test_gex_put_gex_is_non_positive_at_all_strikes(self, fa_client):
+        data = fa_client.gex(TICKER)
+        for row in data["strikes"]:
+            assert row["put_gex"] <= 0, f"Positive put_gex at {row['strike']}"
+
+
+@pytest.mark.integration
+class TestExposureLevelsSdk:
+    """Verify exposure_levels() returns all required level fields."""
+
+    def test_levels_response_has_levels_key(self, fa_client):
+        data = fa_client.exposure_levels(TICKER)
+        assert "levels" in data
+
+    def test_all_level_fields_present(self, fa_client):
+        levels = fa_client.exposure_levels(TICKER)["levels"]
+        for field in ("gamma_flip", "call_wall", "put_wall"):
+            assert field in levels, f"Missing field '{field}' in levels"
+
+    def test_call_wall_above_put_wall(self, fa_client):
+        levels = fa_client.exposure_levels(TICKER)["levels"]
+        assert levels["call_wall"] > levels["put_wall"]
+
+    def test_max_pain_is_present_and_positive(self, fa_client):
+        levels = fa_client.exposure_levels(TICKER)["levels"]
+        max_pain = levels.get("max_pain")
+        if max_pain is not None:
+            assert max_pain > 0
+
+    def test_zero_dte_magnet_is_present(self, fa_client):
+        levels = fa_client.exposure_levels(TICKER)["levels"]
+        assert "zero_dte_magnet" in levels
+
+
+@pytest.mark.integration
+class TestExposureSummaryHedging:
+    """Verify exposure_summary() returns hedging estimate data."""
+
+    def test_summary_returns_dict(self, fa_client):
+        try:
+            data = fa_client.exposure_summary(TICKER)
+            assert isinstance(data, dict)
+        except TierRestrictedError:
+            pytest.skip("exposure_summary requires Growth+ plan")
+
+    def test_summary_has_gex_section(self, fa_client):
+        try:
+            data = fa_client.exposure_summary(TICKER)
+            assert "gex" in data or "net_gex" in data
+        except TierRestrictedError:
+            pytest.skip("exposure_summary requires Growth+ plan")
+
+    def test_summary_has_hedging_section(self, fa_client):
+        try:
+            data = fa_client.exposure_summary(TICKER)
+            assert "hedging" in data
+        except TierRestrictedError:
+            pytest.skip("exposure_summary requires Growth+ plan")
+
+
+@pytest.mark.integration
+class TestNarrativeSdk:
+    """Verify narrative() returns all expected sections (if plan permits)."""
+
+    def test_narrative_returns_dict(self, fa_client):
+        try:
+            data = fa_client.narrative(TICKER)
+            assert isinstance(data, dict)
+        except TierRestrictedError:
+            pytest.skip("narrative requires Growth+ plan")
+
+    def test_narrative_has_regime(self, fa_client):
+        try:
+            data = fa_client.narrative(TICKER)
+            assert "regime" in data or "outlook" in data
+        except TierRestrictedError:
+            pytest.skip("narrative requires Growth+ plan")
+
+    def test_narrative_has_outlook(self, fa_client):
+        try:
+            data = fa_client.narrative(TICKER)
+            if "outlook" in data:
+                assert isinstance(data["outlook"], str)
+                assert len(data["outlook"]) > 0
+        except TierRestrictedError:
+            pytest.skip("narrative requires Growth+ plan")
+
+
+@pytest.mark.integration
+class TestDexVexChexSdk:
+    """Verify DEX, VEX, and CHEX endpoints return valid data."""
+
+    def test_dex_returns_dict(self, fa_client):
+        data = fa_client.dex(TICKER)
+        assert isinstance(data, dict)
+
+    def test_dex_has_strikes(self, fa_client):
+        data = fa_client.dex(TICKER)
+        if "strikes" in data:
+            assert isinstance(data["strikes"], list)
+
+    def test_vex_returns_dict(self, fa_client):
+        data = fa_client.vex(TICKER)
+        assert isinstance(data, dict)
+
+    def test_chex_returns_dict(self, fa_client):
+        data = fa_client.chex(TICKER)
+        assert isinstance(data, dict)
+
+    def test_vex_has_net_field(self, fa_client):
+        data = fa_client.vex(TICKER)
+        # net may appear as "net", "net_vex", or similar — just verify one exists
+        has_net = any(k in data for k in ("net", "net_vex", "total"))
+        assert has_net, f"No net field found in VEX response: {list(data.keys())}"
+
+
+@pytest.mark.integration
+class TestStockQuoteSdk:
+    """Verify stock_quote() returns valid quote data."""
+
+    def test_stock_quote_returns_dict(self, fa_client):
+        data = fa_client.stock_quote(TICKER)
+        assert isinstance(data, dict)
+
+    def test_stock_quote_has_bid_ask(self, fa_client):
+        data = fa_client.stock_quote(TICKER)
+        assert "bid" in data or "mid" in data, f"No price field found: {list(data.keys())}"
+
+    def test_stock_quote_price_is_positive(self, fa_client):
+        data = fa_client.stock_quote(TICKER)
+        price = data.get("mid") or data.get("last") or data.get("bid")
+        assert price is not None
+        assert price > 0

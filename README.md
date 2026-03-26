@@ -84,13 +84,33 @@ Beyond the gamma flip, GEX analysis identifies:
 
 ## Code in This Repo
 
+### Core: from-scratch GEX computation
+
 | File | What it does |
 |------|-------------|
 | [code/compute_gex.py](code/compute_gex.py) | Computes GEX from a raw CSV options chain |
 | [code/plot_gex.py](code/plot_gex.py) | Bar chart of GEX by strike with key levels marked |
 | [code/compare_with_api.py](code/compare_with_api.py) | Compares manual calculation against the FlashAlpha API |
 | [data/sample_chain.csv](data/sample_chain.csv) | Sample SPY options chain (~25 rows, realistic prices) |
-| [tests/test_compute_gex.py](tests/test_compute_gex.py) | Unit tests for the GEX computation logic |
+
+### API examples: live GEX data via FlashAlpha
+
+| File | What it does |
+|------|-------------|
+| [code/gamma_exposure_by_strike.py](code/gamma_exposure_by_strike.py) | Full GEX profile by strike — call GEX, put GEX, net GEX, OI, volume |
+| [code/dealer_hedging_flow_analysis.py](code/dealer_hedging_flow_analysis.py) | Dealer hedging estimates at ±1% moves — shares, direction, notional |
+| [code/gamma_flip_level_tracker.py](code/gamma_flip_level_tracker.py) | Track gamma flip, call wall, put wall, max pain, 0DTE magnet |
+| [code/call_wall_put_wall_finder.py](code/call_wall_put_wall_finder.py) | Scan multiple symbols (SPY, QQQ, AAPL, TSLA, NVDA) for wall levels |
+| [code/gex_trading_spy_tsla_qqq.py](code/gex_trading_spy_tsla_qqq.py) | Comprehensive GEX trading analysis for SPY, TSLA, and QQQ |
+| [code/exposure_narrative_analysis.py](code/exposure_narrative_analysis.py) | AI-powered narrative: regime, flow, vanna, charm, 0DTE, outlook |
+| [code/delta_vanna_charm_exposure.py](code/delta_vanna_charm_exposure.py) | DEX, VEX, CHEX — delta, vanna, and charm exposure beyond gamma |
+
+### Tests
+
+| File | What it does |
+|------|-------------|
+| [tests/test_compute_gex.py](tests/test_compute_gex.py) | Unit tests for the from-scratch GEX computation logic |
+| [tests/test_unit.py](tests/test_unit.py) | Unit tests for FlashAlpha API response parsing (mocked, no key required) |
 | [tests/test_integration.py](tests/test_integration.py) | Integration tests against the live FlashAlpha API |
 
 Run the compute script:
@@ -100,11 +120,27 @@ pip install numpy scipy matplotlib requests
 python code/compute_gex.py
 ```
 
-Run tests:
+Run unit tests (no API key required):
 
 ```bash
-pytest tests/test_compute_gex.py
+pip install flashalpha pytest
+pytest tests/test_compute_gex.py tests/test_unit.py -v
 ```
+
+Run all tests including live API tests:
+
+```bash
+export FLASHALPHA_API_KEY=your_key_here
+pytest tests/ -v -m integration
+```
+
+---
+
+## GEX Trading Guide
+
+For a complete walkthrough of how to use GEX data to trade SPY, TSLA, and QQQ — including regime identification, level tracking, and dealer hedging flow analysis — see:
+
+[GEX Trading Guide: Gamma Exposure API for SPY, TSLA, QQQ](https://flashalpha.com/articles/gex-trading-guide-gamma-exposure-api-spy-tsla)
 
 ---
 
