@@ -186,17 +186,18 @@ class TestExposureSummaryHedging:
         except TierRestrictedError:
             pytest.skip("exposure_summary requires Growth+ plan")
 
-    def test_summary_has_gex_section(self, fa_client):
+    def test_summary_has_exposures_section(self, fa_client):
         try:
             data = fa_client.exposure_summary(TICKER)
-            assert "gex" in data or "net_gex" in data
+            assert "exposures" in data
+            assert "net_gex" in data["exposures"]
         except TierRestrictedError:
             pytest.skip("exposure_summary requires Growth+ plan")
 
-    def test_summary_has_hedging_section(self, fa_client):
+    def test_summary_has_hedging_estimate(self, fa_client):
         try:
             data = fa_client.exposure_summary(TICKER)
-            assert "hedging" in data
+            assert "hedging_estimate" in data
         except TierRestrictedError:
             pytest.skip("exposure_summary requires Growth+ plan")
 
@@ -215,7 +216,8 @@ class TestNarrativeSdk:
     def test_narrative_has_regime(self, fa_client):
         try:
             data = fa_client.narrative(TICKER)
-            assert "regime" in data or "outlook" in data
+            assert "narrative" in data
+            assert "regime" in data["narrative"]
         except TierRestrictedError:
             pytest.skip("narrative requires Growth+ plan")
 
