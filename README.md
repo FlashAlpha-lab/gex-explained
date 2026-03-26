@@ -1,5 +1,7 @@
 # What is Gamma Exposure (GEX) and Why It Moves Markets
 
+[![CI](https://github.com/FlashAlpha-lab/gex-explained/actions/workflows/ci.yml/badge.svg)](https://github.com/FlashAlpha-lab/gex-explained/actions/workflows/ci.yml)
+
 This repository explains Gamma Exposure (GEX) from first principles — the math behind it, how it shapes market microstructure, and how to compute it yourself from a raw options chain. All code is runnable with publicly available data.
 
 ---
@@ -162,3 +164,13 @@ print(levels)
 ```
 
 The API is at `https://lab.flashalpha.com`. Auth via `X-Api-Key` header. See [code/compare_with_api.py](code/compare_with_api.py) for a raw-requests example.
+
+---
+
+## Related Repositories
+
+- [FlashAlpha Python SDK](https://github.com/FlashAlpha-lab/flashalpha-python) — `pip install flashalpha`
+- [0DTE Options Analytics](https://github.com/FlashAlpha-lab/0dte-options-analytics) — 0DTE pin risk, expected move, dealer hedging
+- [Volatility Surface Python](https://github.com/FlashAlpha-lab/volatility-surface-python) — SVI, variance swap, skew analysis
+- [Examples](https://github.com/FlashAlpha-lab/flashalpha-examples) — more tutorials
+- [Awesome Options Analytics](https://github.com/FlashAlpha-lab/awesome-options-analytics) — curated resource list
