@@ -174,3 +174,9 @@ The API is at `https://lab.flashalpha.com`. Auth via `X-Api-Key` header. See [co
 - [Volatility Surface Python](https://github.com/FlashAlpha-lab/volatility-surface-python) — SVI, variance swap, skew analysis
 - [Examples](https://github.com/FlashAlpha-lab/flashalpha-examples) — more tutorials
 - [Awesome Options Analytics](https://github.com/FlashAlpha-lab/awesome-options-analytics) — curated resource list
+
+## Beyond the basics
+
+This repo computes the math from scratch and against the live API. Production
+workloads (full-universe coverage, point-in-time history, aggregate vanna/charm)
+run on the **Alpha tier**: [flashalpha.com/for-quant-teams](https://flashalpha.com/for-quant-teams?utm_source=github&utm_medium=readme&utm_campaign=repo-gex-explained)
