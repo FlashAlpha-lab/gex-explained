@@ -167,6 +167,24 @@ The API is at `https://lab.flashalpha.com`. Auth via `X-Api-Key` header. See [co
 
 ---
 
+## Live GEX & Dealer-Exposure Endpoints
+
+Beyond the basic `gex` profile, FlashAlpha exposes a family of gamma-exposure and dealer-positioning endpoints purpose-built for the analysis in this repo — per-strike GEX by strike, gamma flip and call/put walls, and live dealer hedging flow. All paths below are under `https://lab.flashalpha.com` with `X-Api-Key` auth.
+
+| Endpoint | What it gives you |
+|----------|-------------------|
+| `GET /v1/exposure/sheet/{symbol}` | Unified per-strike exposure sheet — GEX, DEX, VEX, CHEX, and DAG (dealer-adjusted gamma) in one call, plus the largest-impact strike (LIS) and gamma/delta peaks. The single best endpoint for a full GEX-by-strike dealer-positioning snapshot. |
+| `GET /v1/exposure/term-structure/{symbol}` | Gamma exposure, delta, vanna, and charm exposure bucketed by DTE and broken out per expiry — see how dealer gamma is distributed across the curve, from 0DTE out to back-month tenors. |
+| `GET /v1/exposure/basket` | Cross-symbol weighted GEX aggregate. Combine SPY, QQQ, and single names into one dealer-gamma signal for index-level positioning and gamma-flip context. |
+| `GET /v1/exposure/oi-diff/{symbol}` | Day-over-day open-interest deltas by strike — surfaces where new dealer gamma is being built or unwound and which strikes are reshaping the call wall and put wall. |
+| `GET /v1/flow/gex/{symbol}` | Live, simulation-aware gamma exposure that re-prices intraday option flow against the settled chain — see how today's trading is shifting net dealer gamma and the gamma flip in real time. |
+| `GET /v1/flow/dealer-risk/{symbol}` | Live dealer hedging risk: estimated dealer gamma positioning and the directional hedging pressure (buy-into-strength vs sell-into-weakness) implied by current flow versus settled exposure. |
+| `GET /v1/strategies/dealer-regime/{symbol}` | Gamma-regime classifier signal — labels the current long-gamma vs short-gamma dealer regime and gamma-flip proximity, the actionable read derived from the exposure data above. |
+
+These endpoints are on the **Growth+** tier. See [flashalpha.com/for-quant-teams](https://flashalpha.com/for-quant-teams?utm_source=github&utm_medium=readme&utm_campaign=repo-gex-explained) for full coverage and point-in-time history.
+
+---
+
 ## Related Repositories
 
 - [FlashAlpha Python SDK](https://github.com/FlashAlpha-lab/flashalpha-python) — `pip install flashalpha`
