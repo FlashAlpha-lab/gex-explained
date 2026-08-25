@@ -75,6 +75,44 @@ Traders watch the gamma flip as a regime boundary. Sustained price action above 
 
 ---
 
+## Data provenance: `data_as_of`
+
+Every FlashAlpha API response carries `data_as_of`, reporting when each upstream feed last
+delivered to the node that answered, plus `endpoint_version` identifying the deployment
+that produced it.
+
+```json
+"endpoint_version": "2026.08.25",
+"data_as_of": {
+  "node": "fa2",
+  "equity_feed": "2026-08-25T18:48:58.204Z",
+  "equity_options_feed": "2026-08-25T18:48:57.900Z",
+  "index_feed": null,
+  "index_options_feed": null,
+  "futures_feed": null,
+  "futures_options_feed": null,
+  "flow_feed": "2026-08-25T18:48:55.100Z",
+  "oi_feed": "2026-08-22T20:00:00.000Z",
+  "macro_feed": "2026-08-25T18:45:00.000Z"
+}
+```
+
+Spot and options are reported separately because they arrive over different pipes and fail
+independently - an index chain can be current while the index level behind it is not, and
+one timestamp cannot express that.
+
+Read each feed against its **own cadence**, not against `as_of`. `oi_feed` at the previous
+session's close is correct: settled open interest is published once per session, so on a
+Monday the newest figure that exists is Friday's. An options feed an hour behind during
+the regular session is not correct. A `null` means that node has not seen that feed, not
+that it is broken.
+
+The field evidences that a feed delivered recently. It does not assert that every contract
+in a chain is equally current: an illiquid strike may not have quoted for hours while its
+feed is healthy.
+
+Full reference: <https://flashalpha.com/docs/lab-api-overview#response-envelope>
+
 ## Key Levels
 
 Beyond the gamma flip, GEX analysis identifies:
