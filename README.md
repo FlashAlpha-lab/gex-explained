@@ -92,7 +92,7 @@ that produced it.
   "futures_feed": null,
   "futures_options_feed": null,
   "flow_feed": "2026-08-25T18:48:55.100Z",
-  "oi_feed": "2026-08-22T20:00:00.000Z",
+  "oi_feed": "2026-08-24T20:00:00.000Z",
   "macro_feed": "2026-08-25T18:45:00.000Z"
 }
 ```
