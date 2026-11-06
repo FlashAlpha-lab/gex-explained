@@ -219,6 +219,8 @@ Beyond the basic `gex` profile, FlashAlpha exposes a family of gamma-exposure an
 | `GET /v1/flow/dealer-risk/{symbol}` | Live dealer hedging risk: estimated dealer gamma positioning and the directional hedging pressure (buy-into-strength vs sell-into-weakness) implied by current flow versus settled exposure. |
 | `GET /v1/strategies/dealer-regime/{symbol}` | Gamma-regime classifier signal — labels the current long-gamma vs short-gamma dealer regime and gamma-flip proximity, the actionable read derived from the exposure data above. |
 
+**Selling options?** [sell-window](https://flashalpha.com/docs/lab-api-strategies-sell-window?utm_source=github&utm_medium=readme&utm_campaign=repo-gex-explained&utm_content=sell-window) answers "should you sell options today?" for SPY, QQQ and IWM: sell or skip per expiry, with the strikes, quotes and exit rule on a sell. More than 5 million backtests led to it. See [every backtested trade](https://flashalpha.com/articles/sell-window-backtest-every-trade-2018-2026?utm_source=github&utm_medium=readme&utm_campaign=repo-gex-explained&utm_content=sell-window).
+
 These endpoints are on the **Growth+** tier. See [flashalpha.com/for-quant-teams](https://flashalpha.com/for-quant-teams?utm_source=github&utm_medium=readme&utm_campaign=repo-gex-explained) for full coverage and point-in-time history.
 
 ---
