@@ -120,6 +120,8 @@ Beyond the gamma flip, GEX analysis identifies:
 - **Call Wall** — the strike with the highest positive GEX from calls. Dealers have maximum long-gamma exposure here; it often acts as a ceiling because dealer selling pressure intensifies as spot approaches it.
 - **Put Wall** — the strike with the highest negative GEX from puts. Dealers have maximum short-gamma exposure here; it often acts as a floor (or a trap door if breached).
 
+To see the call wall, put wall and gamma flip move bar by bar on a live candlestick chart, use [TradingView GEX by FlashAlpha](https://github.com/FlashAlpha-lab/tradingview-gex-flashalpha) ([live demo](https://flashalpha-lab.github.io/tradingview-gex-flashalpha/)).
+
 ---
 
 ## Code in This Repo
@@ -231,6 +233,7 @@ These endpoints are on the **Growth+** tier. See [flashalpha.com/for-quant-teams
 - [0DTE Options Analytics](https://github.com/FlashAlpha-lab/0dte-options-analytics) — 0DTE pin risk, expected move, dealer hedging
 - [Volatility Surface Python](https://github.com/FlashAlpha-lab/volatility-surface-python) — SVI, variance swap, skew analysis
 - [Examples](https://github.com/FlashAlpha-lab/flashalpha-examples) — more tutorials
+- [TradingView GEX by FlashAlpha](https://github.com/FlashAlpha-lab/tradingview-gex-flashalpha) - call wall, put wall, gamma flip and max pain on a live candlestick chart
 - [Awesome Options Analytics](https://github.com/FlashAlpha-lab/awesome-options-analytics) — curated resource list
 
 ## Beyond the basics
