@@ -122,6 +122,8 @@ Beyond the gamma flip, GEX analysis identifies:
 
 To see the call wall, put wall and gamma flip move bar by bar on a live candlestick chart, use [TradingView GEX by FlashAlpha](https://github.com/FlashAlpha-lab/tradingview-gex-flashalpha) ([live demo](https://flashalpha-lab.github.io/tradingview-gex-flashalpha/)).
 
+For a hosted chart with these levels already drawn for SPY, QQQ and SPX, see [GammaPlot](https://gammaplot.com/).
+
 ---
 
 ## Code in This Repo
